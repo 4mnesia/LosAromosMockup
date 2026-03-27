@@ -1,0 +1,734 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --g: #1a5c2a;
+    --gm: #2d7a3e;
+    --gl: #e8f2ea;
+    --go: #c9962a;
+    --gol: #fdf6e7;
+    --cr: #f9f6f0;
+    --bk: #6b4c2a;
+    --bkl: #f5ede3;
+  }
+
+  .root { font-family: 'DM Sans', sans-serif; background: var(--cr); color: #2c2c2a; font-size: 13px; }
+
+  /* NAV */
+  .nav { background: var(--g); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; height: 54px; border-bottom: 2px solid var(--go); }
+  .logo { display: flex; align-items: center; gap: 12px; }
+  .logo-text { font-family: 'Cormorant Garamond', serif; color: #fff; font-size: 16px; font-weight: 500; line-height: 1.2; }
+  .logo-sub { font-family: 'DM Sans', sans-serif; color: rgba(255,255,255,.5); font-size: 10px; letter-spacing: .06em; text-transform: uppercase; }
+  .period { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2); color: rgba(255,255,255,.8); padding: 4px 12px; border-radius: 16px; font-size: 11.5px; }
+
+  /* TABS */
+  .tabs { background: #fff; border-bottom: 1px solid #e5e1d8; display: flex; padding: 0 16px; gap: 2px; overflow-x: auto; }
+  .tab { padding: 12px 16px 10px; font-size: 12.5px; color: #999; cursor: pointer; border-bottom: 2.5px solid transparent; white-space: nowrap; user-select: none; transition: color .15s, border-color .15s; }
+  .tab:hover { color: var(--g); }
+  .tab.on { color: var(--g); font-weight: 500; border-bottom-color: var(--g); }
+
+  /* CONTENT */
+  .main { padding: 20px 24px 32px; }
+  .tc { display: none; }
+  .tc.on { display: block; }
+
+  /* SECTION TITLES */
+  .stitle { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 500; color: var(--g); margin-bottom: 18px; }
+  .stitle small { font-family: 'DM Sans', sans-serif; font-size: 11px; color: #aaa; font-weight: 300; margin-left: 8px; }
+
+  /* PANEL */
+  .panel { background: #fff; border: 0.5px solid #e2ded6; border-radius: 10px; padding: 18px 20px; margin-bottom: 18px; }
+  .ptitle { font-size: 12px; font-weight: 500; color: var(--g); margin-bottom: 14px; text-transform: uppercase; letter-spacing: .06em; }
+
+  /* DATA TABLES */
+  .dt { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  .dt th { background: var(--g); color: rgba(255,255,255,.88); font-weight: 400; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; padding: 8px 10px; text-align: center; white-space: nowrap; }
+  .dt th:first-child { text-align: left; }
+  .dt td { padding: 7px 10px; border-bottom: 0.5px solid #f0ece4; text-align: center; color: #444; }
+  .dt td:first-child { text-align: left; color: #333; }
+  .dt tr:hover td { background: #faf8f4; }
+  .dt tr.sub td { background: #f4f1eb; font-weight: 500; color: #333; }
+  .dt tr.tot td { background: var(--gl); font-weight: 500; color: var(--g); border-top: 1px solid #c8ddc8; }
+  .dt tr.hl td { background: var(--gol); color: #8a6500; }
+  .dt .num { font-variant-numeric: tabular-nums; }
+
+  /* WEEK TABLE – compact header */
+  .week-label { font-size: 10px; }
+
+  /* EMBUDO */
+  .emb-wrap { overflow-x: auto; }
+  .emb-table { border-collapse: collapse; font-size: 12px; min-width: 900px; }
+  .emb-table th { background: var(--g); color: rgba(255,255,255,.85); font-weight: 400; font-size: 10.5px; padding: 7px 8px; text-align: center; white-space: nowrap; }
+  .emb-table th:first-child { text-align: left; min-width: 200px; }
+  .emb-table td { padding: 6px 8px; border-bottom: 0.5px solid #f0ece4; text-align: center; color: #555; }
+  .emb-table td:first-child { text-align: left; color: #333; padding-left: 10px; }
+  .emb-table td.sano { background: #e8f2ea; color: var(--g); font-weight: 500; }
+  .emb-table td.actual { background: #fdf6e7; color: #8a6500; font-weight: 500; }
+  .emb-table td.fut { color: #ccc; font-size: 11px; }
+  .emb-table tr:hover td { background: #faf8f4; }
+
+  /* VALUE CELLS */
+  .vg { color: var(--gm); font-weight: 500; }
+  .vr { color: #c0392b; font-weight: 500; }
+  .va { color: #8a6500; font-weight: 500; }
+  .vgray { color: #aaa; font-size: 11px; }
+
+  /* BADGE EVENT TYPE */
+  .et { display: inline-block; font-size: 10px; padding: 2px 7px; border-radius: 8px; font-weight: 400; }
+  .et-c { background: #e8f2ea; color: #1a5c2a; }
+  .et-k { background: #e1f0f5; color: #1a5070; }
+  .et-v { background: #f5ede3; color: #6b4c2a; }
+
+  /* STOCK */
+  .stock-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; margin-bottom: 16px; }
+  .stock-sub { background: #fff; border: 0.5px solid #e2ded6; border-radius: 10px; overflow: hidden; }
+  .stock-hdr { background: var(--g); color: #fff; padding: 10px 14px; font-family: 'Cormorant Garamond', serif; font-size: 15px; display: flex; justify-content: space-between; align-items: center; }
+  .stock-hdr span { font-family: 'DM Sans', sans-serif; font-size: 10.5px; opacity: .65; font-weight: 300; }
+  .pg { display: grid; grid-template-columns: repeat(6,1fr); gap: 4px; padding: 10px; }
+  .p { aspect-ratio:1; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 8.5px; font-weight: 500; color: #fff; }
+  .pL { background: var(--g); } .pR { background: var(--go); } .pV { background: #aaa; }
+  .pa1{opacity:1}.pa2{opacity:.72}.pa3{opacity:.48}
+  .sleg { display: flex; gap: 10px; padding: 6px 10px 10px; flex-wrap: wrap; }
+  .sl { display: flex; align-items: center; gap: 5px; font-size: 10.5px; color: #666; }
+  .sl-dot { width: 9px; height: 9px; border-radius: 2px; }
+
+  /* ALERT BOXES */
+  .alert { border-left: 3px solid var(--go); background: var(--gol); padding: 9px 12px; border-radius: 0 8px 8px 0; margin-bottom: 8px; }
+  .alert.red { border-color: #e74c3c; background: #fdf0ee; }
+  .alert.green { border-color: var(--g); background: var(--gl); }
+  .alert-t { font-size: 12px; font-weight: 500; color: #8a6500; margin-bottom: 1px; }
+  .alert.red .alert-t { color: #a32d2d; }
+  .alert.green .alert-t { color: var(--g); }
+  .alert-s { font-size: 11.5px; color: #a07820; }
+  .alert.red .alert-s { color: #c04040; }
+  .alert.green .alert-s { color: var(--gm); }
+
+  @media (prefers-color-scheme: dark) {
+    .root { background: #1a1a18; color: #d4d0c8; }
+    .nav { background: #0e3318; }
+    .tabs { background: #242420; border-color: #333; }
+    .tab { color: #666; }
+    .tab.on, .tab:hover { color: #6ab87a; }
+    .tab.on { border-bottom-color: #6ab87a; }
+    .main { background: #1a1a18; }
+    .panel, .stock-sub { background: #242420; border-color: #333; }
+    .dt th { background: #0e3318; }
+    .dt td { color: #aaa; border-color: #2e2e2c; }
+    .dt td:first-child { color: #ccc; }
+    .dt tr.sub td { background: #2a2a28; color: #ccc; }
+    .dt tr.tot td { background: #1a3020; color: #6ab87a; border-color: #2a5030; }
+    .dt tr.hl td { background: #2a2210; color: #c9962a; }
+    .dt tr:hover td { background: #2a2a28; }
+    .emb-table th { background: #0e3318; }
+    .emb-table td { color: #888; border-color: #2e2e2c; }
+    .emb-table td:first-child { color: #ccc; }
+    .emb-table td.sano { background: #1a3020; color: #6ab87a; }
+    .emb-table td.actual { background: #2a2210; color: #c9962a; }
+    .emb-table tr:hover td { background: #2a2a28; }
+    .stock-hdr { background: #0e3318; }
+  }
+</style>
+
+<div class="root">
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="logo">
+      <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+        <rect width="36" height="36" rx="6" fill="rgba(255,255,255,.1)"/>
+        <ellipse cx="18" cy="12" rx="8" ry="7" fill="rgba(255,255,255,.9)"/>
+        <rect x="16" y="18" width="4" height="8" rx="1" fill="rgba(255,255,255,.9)"/>
+        <rect x="7" y="28" width="22" height="2" rx="1" fill="rgba(255,255,255,.45)"/>
+      </svg>
+      <div>
+        <div class="logo-text">Hacienda Los Aromos</div>
+        <div class="logo-sub">Panel Comercial · Limache</div>
+      </div>
+    </div>
+    <div class="period">Temporada 2026</div>
+  </nav>
+
+  <!-- TABS -->
+  <div class="tabs" id="tabs">
+    <div class="tab on" data-t="h1">Hoja 1: Resumen</div>
+    <div class="tab" data-t="h2">Hoja 2: Marketing</div>
+    <div class="tab" data-t="h3">Hoja 3: Eventos</div>
+    <div class="tab" data-t="h4">Hoja 4: Stock</div>
+    <div class="tab" data-t="h5">Hoja 5: Meta & Adwords</div>
+  </div>
+
+  <div class="main">
+
+    <!-- ======= HOJA 1: RESUMEN ======= -->
+    <div class="tc on" id="h1">
+      <div class="stitle">Resumen <small>Hoja 1</small></div>
+
+      <!-- 1. ÚLTIMAS 3 SEMANAS -->
+      <div class="panel">
+        <div class="ptitle">1. Resumen de las últimas 3 semanas</div>
+        <table class="dt">
+          <thead>
+            <tr>
+              <th>Semana</th>
+              <th>Lun 2 – Dom 8 mar</th>
+              <th>Lun 9 – Dom 15 mar</th>
+              <th>Lun 16 – Dom 22 mar</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Contactos</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr>
+            <tr><td>Visitas</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr>
+            <tr><td>Reservas</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr>
+            <tr><td>Compraventas firmadas</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 2. RESUMEN MENSUAL -->
+      <div class="panel">
+        <div class="ptitle">2. Resumen mensual 2026</div>
+        <div style="overflow-x:auto">
+          <table class="dt" style="min-width:900px">
+            <thead>
+              <tr>
+                <th>Indicador</th>
+                <th>Total 2026</th>
+                <th>Ene</th><th>Feb</th><th>Mar</th><th>Abr</th>
+                <th>May</th><th>Jun</th><th>Jul</th><th>Ago</th>
+                <th>Sep</th><th>Oct</th><th>Nov</th><th>Dic</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Contactos</td><td>—</td><td>—</td><td>—</td><td>—</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td></tr>
+              <tr><td>Visitas</td><td>—</td><td>—</td><td>—</td><td>—</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td></tr>
+              <tr><td>Reservas</td><td>—</td><td>—</td><td>—</td><td>—</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td></tr>
+              <tr><td>Compraventas firmadas</td><td>—</td><td>—</td><td>—</td><td>—</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- DESGLOSE POR ORIGEN -->
+      <div class="panel">
+        <div class="ptitle">2b. Desglose por origen — Contactos</div>
+        <div style="overflow-x:auto">
+          <table class="dt" style="min-width:900px">
+            <thead>
+              <tr>
+                <th>Origen</th>
+                <th>Total 2026</th>
+                <th>Ene</th><th>Feb</th><th>Mar</th><th>Abr</th>
+                <th>May</th><th>Jun</th><th>Jul</th><th>Ago</th>
+                <th>Sep</th><th>Oct</th><th>Nov</th><th>Dic</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>WhatsApp Facebook</td><td>—</td><td>—</td><td>—</td><td>—</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td></tr>
+              <tr><td>WhatsApp Instagram</td><td>—</td><td>—</td><td>—</td><td>—</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td></tr>
+              <tr><td>WhatsApp web</td><td>—</td><td>—</td><td>—</td><td>—</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td></tr>
+              <tr><td>Formulario web</td><td>—</td><td>—</td><td>—</td><td>—</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td></tr>
+              <tr><td>Corredor externo</td><td>—</td><td>—</td><td>—</td><td>—</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td></tr>
+              <tr><td>Club de captadores</td><td>—</td><td>—</td><td>—</td><td>—</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td></tr>
+              <tr><td>Referido</td><td>—</td><td>—</td><td>—</td><td>—</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td></tr>
+              <tr><td>Letrero</td><td>—</td><td>—</td><td>—</td><td>—</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td></tr>
+              <tr class="tot"><td>Total</td><td>—</td><td>—</td><td>—</td><td>—</td><td>·</td><td>·</td><td>·</td><td>·</td><td>·</td><td>·</td><td>·</td><td>·</td><td>·</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- VALORES Y EVENTOS -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px">
+        <div class="panel" style="margin:0">
+          <div class="ptitle">Valores del mes</div>
+          <div style="overflow-x:auto">
+            <table class="dt" style="min-width:600px">
+              <thead>
+                <tr>
+                  <th>Indicador</th>
+                  <th>Total</th>
+                  <th>Ene</th><th>Feb</th><th>Mar</th><th>Abr</th>
+                  <th>May</th><th>Jun</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Valor reservas del mes</td><td>—</td><td>—</td><td>—</td><td>—</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td></tr>
+                <tr><td>Valor compraventas del mes</td><td>—</td><td>—</td><td>—</td><td>—</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="panel" style="margin:0">
+          <div class="ptitle">Eventos del mes</div>
+          <div style="overflow-x:auto">
+            <table class="dt" style="min-width:600px">
+              <thead>
+                <tr>
+                  <th>Indicador</th>
+                  <th>Total</th>
+                  <th>Ene</th><th>Feb</th><th>Mar</th><th>Abr</th>
+                  <th>May</th><th>Jun</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Eventos realizados</td><td>—</td><td>—</td><td>—</td><td>—</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td></tr>
+                <tr><td>Asistentes a eventos</td><td>—</td><td>—</td><td>—</td><td>—</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td></tr>
+                <tr><td>Reservas en eventos</td><td>—</td><td>—</td><td>—</td><td>—</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td></tr>
+                <tr><td>Valor de las reservas</td><td>—</td><td>—</td><td>—</td><td>—</td><td class="vgray">·</td><td class="vgray">·</td><td class="vgray">·</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. STATUS DEL EMBUDO -->
+      <div class="panel">
+        <div class="ptitle">3. Status del embudo — último día de cada mes</div>
+        <div class="emb-wrap">
+          <table class="emb-table">
+            <thead>
+              <tr>
+                <th>Etapa</th>
+                <th>Embudo sano</th>
+                <th>Embudo actual</th>
+                <th>31-1-26</th>
+                <th>28-2-26</th>
+                <th>31-3-26</th>
+                <th>30-4-26</th>
+                <th>31-5-26</th>
+                <th>30-6-26</th>
+                <th>31-7-26</th>
+                <th>31-8-26</th>
+                <th>30-9-26</th>
+                <th>31-10-26</th>
+                <th>30-11-26</th>
+                <th>31-12-26</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1er contacto</td>
+                <td class="sano">20</td><td class="actual">23</td>
+                <td>20</td><td>23</td><td>26</td>
+                <td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td>
+              </tr>
+              <tr>
+                <td>2do contacto</td>
+                <td class="sano">20</td><td class="actual">23</td>
+                <td>20</td><td>23</td><td>26</td>
+                <td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td>
+              </tr>
+              <tr>
+                <td>3er contacto</td>
+                <td class="sano">20</td><td class="actual">23</td>
+                <td>20</td><td>23</td><td>26</td>
+                <td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td>
+              </tr>
+              <tr>
+                <td>Contactado (Interés vigente actual)</td>
+                <td class="sano">15</td><td class="actual">18</td>
+                <td>15</td><td>18</td><td>21</td>
+                <td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td>
+              </tr>
+              <tr>
+                <td>Contactado (Interesado para más adelante)</td>
+                <td class="sano">4</td><td class="actual">7</td>
+                <td>4</td><td>7</td><td>10</td>
+                <td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td>
+              </tr>
+              <tr>
+                <td>Visita agendada</td>
+                <td class="sano">7</td><td class="actual">10</td>
+                <td>7</td><td>10</td><td>13</td>
+                <td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td>
+              </tr>
+              <tr>
+                <td>Visita realizada y con interés vigente</td>
+                <td class="sano">5</td><td class="actual">8</td>
+                <td>5</td><td>8</td><td>11</td>
+                <td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td>
+              </tr>
+              <tr>
+                <td>Reserva</td>
+                <td class="sano">8</td><td class="actual">11</td>
+                <td>8</td><td>11</td><td>14</td>
+                <td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td>
+              </tr>
+              <tr>
+                <td>Escritura firmada</td>
+                <td class="sano">4</td><td class="actual">7</td>
+                <td>4</td><td>7</td><td>10</td>
+                <td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td><td class="fut">·</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="margin-top:10px;display:flex;gap:16px;font-size:11px;color:#888">
+          <span style="display:flex;align-items:center;gap:5px"><span style="background:#e8f2ea;color:var(--g);font-weight:500;padding:2px 8px;border-radius:4px">Verde</span> Embudo sano (objetivo)</span>
+          <span style="display:flex;align-items:center;gap:5px"><span style="background:#fdf6e7;color:#8a6500;font-weight:500;padding:2px 8px;border-radius:4px">Dorado</span> Embudo actual (mes corriente)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======= HOJA 2: MARKETING ======= -->
+    <div class="tc" id="h2">
+      <div class="stitle">Marketing <small>Origen de contactos y efectividad de canales</small></div>
+
+      <div class="panel">
+        <div class="ptitle">Canal — Inversión, contactos, resultados y conversión</div>
+        <div style="overflow-x:auto">
+          <table class="dt" style="min-width:700px">
+            <thead>
+              <tr>
+                <th>Canal</th>
+                <th>Inversión (UF)</th>
+                <th>Contactos</th>
+                <th>Visitas</th>
+                <th>Reservas</th>
+                <th>Compraventas</th>
+                <th>Conv %</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Formulario web</td><td class="num">100</td><td class="num">347</td><td class="num">68</td><td class="num">4</td><td class="num">2</td><td class="num vg">1.2%</td></tr>
+              <tr><td>WhatsApp web</td><td class="num">80</td><td class="num">355</td><td class="num">72</td><td class="num">5</td><td class="num">3</td><td class="num vg">1.4%</td></tr>
+              <tr><td>WhatsApp Facebook</td><td class="num">60</td><td class="num">248</td><td class="num">48</td><td class="num">3</td><td class="num">3</td><td class="num vg">1.2%</td></tr>
+              <tr><td>WhatsApp Instagram</td><td class="num">40</td><td class="num">204</td><td class="num">40</td><td class="num">2</td><td class="num">2</td><td class="num">1.0%</td></tr>
+              <tr><td>Corredor externo</td><td class="num">20</td><td class="num">180</td><td class="num">52</td><td class="num">4</td><td class="num">2</td><td class="num vg">2.2%</td></tr>
+              <tr><td>Club captadores</td><td class="num">10</td><td class="num">95</td><td class="num">30</td><td class="num">3</td><td class="num">1</td><td class="num vg">3.2%</td></tr>
+              <tr><td>Referido</td><td class="num">4</td><td class="num">78</td><td class="num">28</td><td class="num">3</td><td class="num">2</td><td class="num vg">3.8%</td></tr>
+              <tr><td>Letrero</td><td class="num">15</td><td class="num">42</td><td class="num">14</td><td class="num">1</td><td class="num">1</td><td class="num vg">2.4%</td></tr>
+              <tr class="tot"><td>TOTAL</td><td class="num">329</td><td class="num">1.559</td><td class="num">312</td><td class="num">19</td><td class="num">16</td><td class="num">1.2%</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="ptitle">Rentabilidad por canal — Valor de reservas y compraventas generadas</div>
+        <div style="overflow-x:auto">
+          <table class="dt" style="min-width:700px">
+            <thead>
+              <tr>
+                <th>Canal</th>
+                <th>Inversión (UF)</th>
+                <th>Valor reservas (UF)</th>
+                <th>Valor compraventas (UF)</th>
+                <th>Costo % por reserva</th>
+                <th>Costo % por CV</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Formulario web</td><td class="num">100</td><td class="num">4.000</td><td class="num">4.000</td><td class="num va">2.50%</td><td class="num va">2.50%</td></tr>
+              <tr><td>WhatsApp web</td><td class="num">80</td><td class="num">6.000</td><td class="num">6.000</td><td class="num vg">1.33%</td><td class="num vg">1.33%</td></tr>
+              <tr><td>WhatsApp Facebook</td><td class="num">60</td><td class="num">6.000</td><td class="num">6.000</td><td class="num vg">1.00%</td><td class="num vg">1.00%</td></tr>
+              <tr><td>WhatsApp Instagram</td><td class="num">40</td><td class="num">4.000</td><td class="num">4.000</td><td class="num vg">1.00%</td><td class="num vg">1.00%</td></tr>
+              <tr><td>Corredor externo</td><td class="num">20</td><td class="num">4.000</td><td class="num">4.000</td><td class="num vg">0.50%</td><td class="num vg">0.50%</td></tr>
+              <tr><td>Club captadores</td><td class="num">10</td><td class="num">2.000</td><td class="num">2.000</td><td class="num vg">0.50%</td><td class="num vg">0.50%</td></tr>
+              <tr><td>Referido</td><td class="num">4</td><td class="num">4.000</td><td class="num">4.000</td><td class="num vg">0.10%</td><td class="num vg">0.10%</td></tr>
+              <tr><td>Letrero</td><td class="num">15</td><td class="num">2.000</td><td class="num">2.000</td><td class="num vg">0.75%</td><td class="num vg">0.75%</td></tr>
+              <tr class="tot"><td>TOTAL</td><td class="num">329</td><td class="num">32.000</td><td class="num">32.000</td><td class="num">1.03%</td><td class="num">1.03%</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======= HOJA 3: EVENTOS ======= -->
+    <div class="tc" id="h3">
+      <div class="stitle">Open House <small>Hoja 3 — Eventos temporada 2025–2026</small></div>
+
+      <!-- KPI strip -->
+      <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:18px">
+        <div style="background:#fff;border:0.5px solid #e2ded6;border-radius:10px;padding:14px 16px;border-top:3px solid var(--g)">
+          <div style="font-size:10.5px;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Eventos realizados</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:400;color:#1a1a18;line-height:1">16</div>
+          <div style="font-size:11px;color:#aaa;margin-top:4px">Temporada 2025–26</div>
+        </div>
+        <div style="background:#fff;border:0.5px solid #e2ded6;border-radius:10px;padding:14px 16px;border-top:3px solid var(--go)">
+          <div style="font-size:10.5px;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Asistentes (familias)</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:400;color:#1a1a18;line-height:1">117</div>
+          <div style="font-size:11px;color:#aaa;margin-top:4px">82.1% tasa asistencia</div>
+        </div>
+        <div style="background:#fff;border:0.5px solid #e2ded6;border-radius:10px;padding:14px 16px;border-top:3px solid var(--bk)">
+          <div style="font-size:10.5px;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Reservas en eventos</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:400;color:#1a1a18;line-height:1">19</div>
+          <div style="font-size:11px;color:#aaa;margin-top:4px">Inversión total $8.28M</div>
+        </div>
+        <div style="background:#fff;border:0.5px solid #e2ded6;border-radius:10px;padding:14px 16px;border-top:3px solid #2d7a6a">
+          <div style="font-size:10.5px;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Inversión / reserva</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:400;color:#1a1a18;line-height:1">$436K</div>
+          <div style="font-size:11px;color:#aaa;margin-top:4px">CLP por reserva evento</div>
+        </div>
+      </div>
+
+      <div class="panel" style="overflow-x:auto">
+        <div class="ptitle">Historial de eventos</div>
+        <table class="dt" style="min-width:860px">
+          <thead>
+            <tr>
+              <th>Evento / Fecha</th>
+              <th>Tipo</th>
+              <th>Inversión ($)</th>
+              <th>Contactos recibidos</th>
+              <th>Asistentes confirmados</th>
+              <th>Clientes nuevos</th>
+              <th>Asistieron</th>
+              <th>Reservas</th>
+              <th>Inv. / Reserva</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Cabalgata – 19 Jul 2025</td><td><span class="et et-c">Cabalgata</span></td><td>$716.454</td><td>0</td><td>15</td><td>15</td><td>15</td><td class="num vg">2</td><td>$358K</td></tr>
+            <tr><td>Paseo lancha – 1 Ago 2025</td><td><span class="et et-k">Lancha</span></td><td>$1.006.954</td><td>0</td><td>16</td><td>16</td><td>13</td><td class="num vg">3</td><td>$336K</td></tr>
+            <tr><td>Cata vino – 4 Oct 2025</td><td><span class="et et-v">Cata vino</span></td><td>$1.051.954</td><td>83</td><td>13</td><td>13</td><td>15</td><td class="num vg">3</td><td>$351K</td></tr>
+            <tr><td>Cabalgata – 26 Oct 2025</td><td><span class="et et-c">Cabalgata</span></td><td>$1.359.754</td><td>0</td><td>15</td><td>12</td><td>11</td><td class="num vg">2</td><td>$680K</td></tr>
+            <tr><td>Cabalgata – 23 Nov 2025</td><td><span class="et et-c">Cabalgata</span></td><td>$934.566</td><td>0</td><td>16</td><td>15</td><td>11</td><td class="num vg">1</td><td>$935K</td></tr>
+            <tr><td>Cabalgata – 21 Dic 2025</td><td><span class="et et-c">Cabalgata</span></td><td>$1.508.196</td><td>56</td><td>25</td><td>24</td><td>18</td><td class="num vg">1</td><td>$1.508K</td></tr>
+            <tr><td>Kayacs – 3 Ene 2026</td><td><span class="et et-k">Kayacs</span></td><td>$1.698.508</td><td>41</td><td>17</td><td>13</td><td>13</td><td class="num vg">1</td><td>$1.699K</td></tr>
+            <tr><td>Kayacs – 10 Ene 2026</td><td><span class="et et-k">Kayacs</span></td><td>$1.217.000</td><td>39</td><td>18</td><td>16</td><td>7</td><td class="num">0</td><td class="vgray">—</td></tr>
+            <tr><td>Kayacs – 17 Ene 2026</td><td><span class="et et-k">Kayacs</span></td><td>$240.000</td><td>38</td><td>4</td><td>4</td><td>1</td><td class="num">0</td><td class="vgray">—</td></tr>
+            <tr><td>Kayacs – 24 Ene 2026</td><td><span class="et et-k">Kayacs</span></td><td>$594.752</td><td>123</td><td>15</td><td>15</td><td>8</td><td class="num">0</td><td class="vgray">—</td></tr>
+            <tr><td>Cata vino – 31 Ene 2026</td><td><span class="et et-v">Cata vino</span></td><td>$260.000</td><td>55</td><td>18</td><td>18</td><td>6</td><td class="num vg">1</td><td>$261K</td></tr>
+            <tr><td>Cabalgata – 8 Feb 2026</td><td><span class="et et-c">Cabalgata</span></td><td>$1.080.800</td><td>131</td><td>20</td><td>18</td><td>11</td><td class="num vg">1</td><td>$1.081K</td></tr>
+            <tr><td>Cata vino – 21 Feb 2026</td><td><span class="et et-v">Cata vino</span></td><td>$1.127.000</td><td>134</td><td>25</td><td>25</td><td>18</td><td class="num vg">3</td><td>$376K</td></tr>
+            <tr><td>Cabalgata – 15 Mar 2026</td><td><span class="et et-c">Cabalgata</span></td><td>$1.196.000</td><td>94</td><td>27</td><td>27</td><td>14</td><td class="num">0</td><td class="vgray">—</td></tr>
+            <tr><td>Club Español – 27 Sep 2025</td><td><span class="et et-c">Cabalgata</span></td><td>$452.000</td><td>152</td><td>45</td><td>44</td><td>19</td><td class="num vg">2</td><td>$226K</td></tr>
+            <tr class="tot"><td>TOTAL</td><td>—</td><td>$13.444.938</td><td>946</td><td>269</td><td>255</td><td>200</td><td>20</td><td>$672K prom.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="panel">
+        <div class="ptitle">Asistencia y resultados — resumen por tipo</div>
+        <table class="dt">
+          <thead>
+            <tr>
+              <th>Tipo de evento</th>
+              <th>N° eventos</th>
+              <th>Total asistentes</th>
+              <th>Clientes nuevos</th>
+              <th>Reservas generadas</th>
+              <th>Inversión total</th>
+              <th>Inv. prom. / evento</th>
+              <th>Costo / reserva</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="et et-c">Cabalgata</span></td><td>7</td><td>141</td><td>126</td><td>8</td><td>$7.248K</td><td>$1.035K</td><td>$906K</td></tr>
+            <tr><td><span class="et et-k">Kayacs / Lancha</span></td><td>5</td><td>70</td><td>64</td><td>4</td><td>$4.757K</td><td>$951K</td><td>$1.189K</td></tr>
+            <tr><td><span class="et et-v">Cata vino</span></td><td>3</td><td>58</td><td>56</td><td>7</td><td>$2.439K</td><td>$813K</td><td>$348K</td></tr>
+            <tr class="tot"><td>TOTAL</td><td>15</td><td>269</td><td>246</td><td>19</td><td>$14.444K</td><td>$963K</td><td>$760K</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ======= HOJA 4: STOCK ======= -->
+    <div class="tc" id="h4">
+      <div class="stitle">Stock de parcelas <small>Hoja 4 — Por subproyecto y nivel de atractivo</small></div>
+
+      <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:18px">
+        <div style="background:#fff;border:0.5px solid #e2ded6;border-radius:10px;padding:14px 16px;border-top:3px solid var(--g)">
+          <div style="font-size:10.5px;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Total parcelas</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:400;line-height:1">120</div>
+          <div style="font-size:11px;color:#aaa;margin-top:4px">3 subproyectos</div>
+        </div>
+        <div style="background:#fff;border:0.5px solid #e2ded6;border-radius:10px;padding:14px 16px;border-top:3px solid var(--gm)">
+          <div style="font-size:10.5px;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Disponibles</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:400;line-height:1;color:var(--gm)">67</div>
+          <div style="font-size:11px;color:#aaa;margin-top:4px">55.8% del total</div>
+        </div>
+        <div style="background:#fff;border:0.5px solid #e2ded6;border-radius:10px;padding:14px 16px;border-top:3px solid var(--go)">
+          <div style="font-size:10.5px;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Reservadas</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:400;line-height:1;color:var(--go)">19</div>
+          <div style="font-size:11px;color:#aaa;margin-top:4px">15.8% del total</div>
+        </div>
+        <div style="background:#fff;border:0.5px solid #e2ded6;border-radius:10px;padding:14px 16px;border-top:3px solid var(--bk)">
+          <div style="font-size:10.5px;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Vendidas</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:400;line-height:1;color:var(--bk)">34</div>
+          <div style="font-size:11px;color:#aaa;margin-top:4px">28.3% del total</div>
+        </div>
+      </div>
+
+      <div class="stock-grid">
+        <div class="stock-sub">
+          <div class="stock-hdr">Sector Norte <span>40 parcelas</span></div>
+          <div class="pg">
+            <div class="p pV pa1">1</div><div class="p pV pa1">2</div><div class="p pL pa1">3</div><div class="p pL pa1">4</div><div class="p pL pa2">5</div><div class="p pL pa2">6</div>
+            <div class="p pV pa1">7</div><div class="p pV pa1">8</div><div class="p pL pa1">9</div><div class="p pR pa1">10</div><div class="p pL pa2">11</div><div class="p pL pa2">12</div>
+            <div class="p pV pa2">13</div><div class="p pV pa2">14</div><div class="p pL pa1">15</div><div class="p pR pa1">16</div><div class="p pL pa3">17</div><div class="p pL pa3">18</div>
+            <div class="p pV pa2">19</div><div class="p pV pa2">20</div><div class="p pL pa2">21</div><div class="p pR pa2">22</div><div class="p pL pa3">23</div><div class="p pL pa3">24</div>
+            <div class="p pV pa1">25</div><div class="p pV pa1">26</div><div class="p pL pa1">27</div><div class="p pR pa1">28</div><div class="p pL pa2">29</div><div class="p pL pa3">30</div>
+            <div class="p pV pa2">31</div><div class="p pV pa3">32</div><div class="p pL pa2">33</div><div class="p pR pa2">34</div><div class="p pR pa2">35</div><div class="p pL pa3">36</div>
+            <div class="p pV pa3">37</div><div class="p pV pa3">38</div><div class="p pL pa3">39</div><div class="p pL pa3">40</div>
+          </div>
+          <div class="sleg">
+            <div class="sl"><div class="sl-dot" style="background:var(--g)"></div> Libre</div>
+            <div class="sl"><div class="sl-dot" style="background:var(--go)"></div> Reservada</div>
+            <div class="sl"><div class="sl-dot" style="background:#aaa"></div> Vendida</div>
+          </div>
+        </div>
+        <div class="stock-sub">
+          <div class="stock-hdr">Sector Centro <span>45 parcelas</span></div>
+          <div class="pg">
+            <div class="p pV pa1">1</div><div class="p pL pa1">2</div><div class="p pL pa1">3</div><div class="p pL pa1">4</div><div class="p pL pa1">5</div><div class="p pL pa2">6</div>
+            <div class="p pV pa1">7</div><div class="p pL pa1">8</div><div class="p pR pa1">9</div><div class="p pL pa1">10</div><div class="p pL pa1">11</div><div class="p pL pa2">12</div>
+            <div class="p pV pa2">13</div><div class="p pL pa2">14</div><div class="p pL pa1">15</div><div class="p pL pa1">16</div><div class="p pL pa2">17</div><div class="p pL pa3">18</div>
+            <div class="p pV pa1">19</div><div class="p pR pa2">20</div><div class="p pL pa2">21</div><div class="p pL pa1">22</div><div class="p pL pa2">23</div><div class="p pL pa3">24</div>
+            <div class="p pV pa3">25</div><div class="p pR pa1">26</div><div class="p pL pa1">27</div><div class="p pL pa2">28</div><div class="p pL pa2">29</div><div class="p pL pa3">30</div>
+            <div class="p pV pa1">31</div><div class="p pR pa3">32</div><div class="p pL pa1">33</div><div class="p pL pa3">34</div><div class="p pL pa3">35</div><div class="p pL pa3">36</div>
+            <div class="p pV pa2">37</div><div class="p pL pa2">38</div><div class="p pL pa2">39</div><div class="p pL pa1">40</div><div class="p pL pa2">41</div><div class="p pL pa3">42</div>
+            <div class="p pV pa3">43</div><div class="p pL pa1">44</div><div class="p pL pa2">45</div>
+          </div>
+          <div class="sleg">
+            <div class="sl"><div class="sl-dot" style="background:var(--g);opacity:1"></div> Atractivo ★★★</div>
+            <div class="sl"><div class="sl-dot" style="background:var(--g);opacity:.72"></div> Atractivo ★★</div>
+            <div class="sl"><div class="sl-dot" style="background:var(--g);opacity:.48"></div> Atractivo ★</div>
+          </div>
+        </div>
+        <div class="stock-sub">
+          <div class="stock-hdr">Sector Sur <span>35 parcelas</span></div>
+          <div class="pg">
+            <div class="p pV pa1">1</div><div class="p pV pa1">2</div><div class="p pL pa1">3</div><div class="p pL pa1">4</div><div class="p pL pa1">5</div><div class="p pL pa1">6</div>
+            <div class="p pV pa2">7</div><div class="p pV pa2">8</div><div class="p pL pa1">9</div><div class="p pL pa2">10</div><div class="p pL pa2">11</div><div class="p pR pa1">12</div>
+            <div class="p pV pa1">13</div><div class="p pV pa1">14</div><div class="p pL pa2">15</div><div class="p pL pa2">16</div><div class="p pR pa2">17</div><div class="p pL pa3">18</div>
+            <div class="p pV pa3">19</div><div class="p pL pa1">20</div><div class="p pL pa1">21</div><div class="p pL pa2">22</div><div class="p pR pa1">23</div><div class="p pL pa3">24</div>
+            <div class="p pV pa2">25</div><div class="p pL pa2">26</div><div class="p pL pa2">27</div><div class="p pL pa3">28</div><div class="p pR pa2">29</div><div class="p pL pa3">30</div>
+            <div class="p pV pa3">31</div><div class="p pL pa3">32</div><div class="p pR pa3">33</div><div class="p pL pa3">34</div><div class="p pL pa3">35</div>
+          </div>
+          <div class="sleg">
+            <div class="sl"><div class="sl-dot" style="background:var(--g)"></div> Libre</div>
+            <div class="sl"><div class="sl-dot" style="background:var(--go)"></div> Reservada</div>
+            <div class="sl"><div class="sl-dot" style="background:#aaa"></div> Vendida</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- tabla stock resumen -->
+      <div class="panel">
+        <div class="ptitle">Resumen de stock por sector</div>
+        <table class="dt">
+          <thead>
+            <tr>
+              <th>Sector</th>
+              <th>Total parcelas</th>
+              <th>Disponibles</th>
+              <th>Reservadas</th>
+              <th>Vendidas</th>
+              <th>% Vendido+Res.</th>
+              <th>Stock sano (libre)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Sector Norte</td><td>40</td><td class="vg">22</td><td class="va">6</td><td>12</td><td>45%</td><td class="vgray">≥ 40%</td></tr>
+            <tr><td>Sector Centro</td><td>45</td><td class="vg">31</td><td class="va">7</td><td>7</td><td>31%</td><td class="vgray">≥ 40%</td></tr>
+            <tr><td>Sector Sur</td><td>35</td><td class="vg">19</td><td class="va">6</td><td>10</td><td>46%</td><td class="vgray">≥ 40%</td></tr>
+            <tr class="tot"><td>TOTAL</td><td>120</td><td>67</td><td>19</td><td>34</td><td>44%</td><td>≥ 40%</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ======= HOJA 5: META & ADWORDS ======= -->
+    <div class="tc" id="h5">
+      <div class="stitle">Campañas digitales <small>Hoja 5 — Meta (Facebook & Instagram) + Google Adwords</small></div>
+
+      <!-- META TABLE -->
+      <div class="panel">
+        <div class="ptitle">Meta — Indicadores clave por mes (2025–2026)</div>
+        <div style="overflow-x:auto">
+          <table class="dt" style="min-width:1000px">
+            <thead>
+              <tr>
+                <th>Indicador</th>
+                <th>Total</th>
+                <th>Ene 25</th><th>Feb 25</th><th>Mar 25</th><th>Abr 25</th>
+                <th>May 25</th><th>Jun 25</th><th>Jul 25</th><th>Ago 25</th>
+                <th>Sep 25</th><th>Oct 25</th><th>Nov 25</th>
+                <th>Ene 26</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="sub"><td colspan="15" style="text-align:left;padding-left:10px;font-size:10.5px;color:var(--g);letter-spacing:.05em">INVERSIÓN</td></tr>
+              <tr><td>Inversión total Meta ($)</td><td class="num">$3.579.457</td><td>$305.084</td><td>$260.609</td><td>$206.681</td><td>$268.363</td><td>$249.798</td><td>$260.915</td><td>$324.725</td><td>$490.082</td><td>$258.035</td><td>$433.033</td><td>$577.314</td><td>—</td></tr>
+              <tr><td style="padding-left:20px;color:#888">— Otras inversiones</td><td class="num">$1.840.657</td><td>$99.757</td><td>$74.882</td><td>$0</td><td>$59.832</td><td>$44.945</td><td>$59.879</td><td>$109.925</td><td>$262.427</td><td>$9.997</td><td>$193.149</td><td>$345.124</td><td>—</td></tr>
+              <tr class="sub"><td colspan="15" style="text-align:left;padding-left:10px;font-size:10.5px;color:var(--g);letter-spacing:.05em">RESULTADOS DIGITALES</td></tr>
+              <tr><td>Formularios Meta (total)</td><td class="num">1.117</td><td>172</td><td>160</td><td>138</td><td>99</td><td>71</td><td>92</td><td>189</td><td>143</td><td>38</td><td>65</td><td>72</td><td>—</td></tr>
+              <tr><td>Conversaciones WhatsApp</td><td class="num">374</td><td>20</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>30</td><td>83</td><td>41</td><td>—</td><td>115</td><td>—</td></tr>
+              <tr><td>Visitas al sitio web</td><td class="num">8.755</td><td>780</td><td>860</td><td>705</td><td>703</td><td>188</td><td>671</td><td>887</td><td>1.002</td><td>813</td><td>816</td><td>753</td><td>—</td></tr>
+              <tr><td>Interacciones</td><td class="num">11.695</td><td>1.503</td><td>259</td><td>—</td><td>1.474</td><td>1.232</td><td>1.710</td><td>745</td><td>1.181</td><td>159</td><td>1.764</td><td>1.351</td><td>—</td></tr>
+              <tr class="sub"><td colspan="15" style="text-align:left;padding-left:10px;font-size:10.5px;color:var(--g);letter-spacing:.05em">RESULTADOS COMERCIALES ORIGINADOS EN META</td></tr>
+              <tr><td>Contactos recibidos (Meta)</td><td class="num vg">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+              <tr><td>Visitas realizadas (Meta)</td><td class="num vg">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+              <tr><td>Reservas (Meta)</td><td class="num va">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+              <tr><td>Compraventas (Meta)</td><td class="num vg">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+              <tr><td>Formularios V Región</td><td class="num">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>32</td><td>50</td><td>53</td><td>—</td><td>—</td></tr>
+              <tr><td>Formularios RM</td><td class="num">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>6</td><td>15</td><td>19</td><td>—</td><td>—</td></tr>
+              <tr class="sub"><td colspan="15" style="text-align:left;padding-left:10px;font-size:10.5px;color:var(--g);letter-spacing:.05em">RENTABILIDAD</td></tr>
+              <tr><td>CPL V Región (costo/formulario)</td><td class="num va">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>$1.636</td><td>$1.885</td><td>$1.714</td><td>—</td><td>—</td></tr>
+              <tr><td>CPL RM (costo/formulario)</td><td class="num va">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>$9.048</td><td>$6.226</td><td>$4.776</td><td>—</td><td>—</td></tr>
+              <tr class="tot"><td>Inv. / reserva generada (Meta)</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ADWORDS TABLE -->
+      <div class="panel">
+        <div class="ptitle">Google Adwords — Indicadores clave por mes (2025–2026)</div>
+        <div style="overflow-x:auto">
+          <table class="dt" style="min-width:1000px">
+            <thead>
+              <tr>
+                <th>Indicador</th>
+                <th>Total</th>
+                <th>Ene 25</th><th>Feb 25</th><th>Mar 25</th><th>Abr 25</th>
+                <th>May 25</th><th>Jun 25</th><th>Jul 25</th><th>Ago 25</th>
+                <th>Sep 25</th><th>Oct 25</th><th>Nov 25</th><th>Dic 25</th>
+                <th>Ene 26</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="sub"><td colspan="16" style="text-align:left;padding-left:10px;font-size:10.5px;color:var(--g);letter-spacing:.05em">INVERSIÓN</td></tr>
+              <tr><td>Inversión total ($)</td><td class="num">$8.488.357</td><td>$720.211</td><td>$716.174</td><td>$730.033</td><td>$726.038</td><td>$740.449</td><td>$638.960</td><td>$671.511</td><td>$633.129</td><td>$731.031</td><td>$727.476</td><td>$730.092</td><td>$723.253</td><td>$724.804</td></tr>
+              <tr><td style="padding-left:20px;color:#888">— Inversión V Región</td><td class="num">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>$671.511</td><td>$576.952</td><td>$365.154</td><td>$364.735</td><td>$365.240</td><td>$578.037</td><td>$583.784</td></tr>
+              <tr><td style="padding-left:20px;color:#888">— Inversión RM (PMAX)</td><td class="num">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>$56.177</td><td>$365.877</td><td>$362.741</td><td>$364.852</td><td>$145.216</td><td>$144.020</td></tr>
+              <tr class="sub"><td colspan="16" style="text-align:left;padding-left:10px;font-size:10.5px;color:var(--g);letter-spacing:.05em">MÉTRICAS DIGITALES</td></tr>
+              <tr><td>Impresiones</td><td class="num">280.472</td><td>27.169</td><td>24.074</td><td>31.598</td><td>25.394</td><td>24.949</td><td>20.333</td><td>23.298</td><td>17.884</td><td>25.293</td><td>24.826</td><td>19.112</td><td>16.542</td><td>18.753</td></tr>
+              <tr><td>Clics</td><td class="num">47.159</td><td>4.885</td><td>4.620</td><td>5.266</td><td>4.089</td><td>4.180</td><td>3.493</td><td>3.772</td><td>2.764</td><td>3.942</td><td>3.878</td><td>3.466</td><td>2.804</td><td>3.577</td></tr>
+              <tr><td>CPC ($)</td><td class="num va">$180</td><td>$149</td><td>$155</td><td>$139</td><td>$178</td><td>$177</td><td>$182</td><td>$178</td><td>$208</td><td>$216</td><td>$189</td><td>$211</td><td>$237</td><td>$188</td></tr>
+              <tr><td>CTR %</td><td class="num vg">16.81%</td><td>17.98%</td><td>19.19%</td><td>16.67%</td><td>16.10%</td><td>16.75%</td><td>17.18%</td><td>16.19%</td><td>15.46%</td><td>15.59%</td><td>15.62%</td><td>18.14%</td><td>16.95%</td><td>19.50%</td></tr>
+              <tr class="sub"><td colspan="16" style="text-align:left;padding-left:10px;font-size:10.5px;color:var(--g);letter-spacing:.05em">RESULTADOS COMERCIALES ORIGINADOS EN ADWORDS</td></tr>
+              <tr><td>Contactos / Leads (total)</td><td class="num vg">1.559</td><td>176</td><td>151</td><td>157</td><td>132</td><td>140</td><td>115</td><td>134</td><td>94</td><td>101</td><td>142</td><td>128</td><td>89</td><td>82</td></tr>
+              <tr><td style="padding-left:20px;color:#888">— Formularios</td><td class="num">347</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>49</td><td>49</td><td>30</td><td>55</td><td>85</td><td>67</td><td>42</td></tr>
+              <tr><td style="padding-left:20px;color:#888">— WhatsApp</td><td class="num">355</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>60</td><td>85</td><td>64</td><td>46</td><td>57</td><td>61</td><td>46</td><td>33</td></tr>
+              <tr><td>Visitas realizadas (Adwords)</td><td class="num vg">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+              <tr><td>Reservas (Adwords)</td><td class="num va">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+              <tr><td>Compraventas (Adwords)</td><td class="num vg">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+              <tr class="sub"><td colspan="16" style="text-align:left;padding-left:10px;font-size:10.5px;color:var(--g);letter-spacing:.05em">RENTABILIDAD</td></tr>
+              <tr><td>CPA total ($)</td><td class="num va">$5.445</td><td>$4.149</td><td>$4.745</td><td>$4.740</td><td>$5.500</td><td>$5.000</td><td>$5.556</td><td>$5.011</td><td>$6.735</td><td>$7.238</td><td>$5.123</td><td>$5.704</td><td>$6.875</td><td>$8.839</td></tr>
+              <tr><td>CPA V Región ($)</td><td class="num vg">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>$5.011</td><td>$6.868</td><td>$6.086</td><td>$8.482</td><td>$5.619</td><td>$7.790</td><td>$5.751</td></tr>
+              <tr><td>CPA RM PMAX ($)</td><td class="num vg">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>$5.618</td><td>$8.924</td><td>$8.637</td><td>$5.791</td><td>$5.960</td><td>$2.000</td></tr>
+              <tr class="tot"><td>Inv. / reserva generada (Adwords)</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /root -->
+
+<script>
+document.getElementById('tabs').querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+    document.querySelectorAll('.tc').forEach(c => c.classList.remove('on'));
+    tab.classList.add('on');
+    document.getElementById(tab.dataset.t).classList.add('on');
+  });
+});
+</script>
